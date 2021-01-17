@@ -1,5 +1,11 @@
 const router = require("express").Router();
 const { body } = require("express-validator");
+const rateLimit = require("express-rate-limit");
+
+const loginLimiter = rateLimit({
+	windowMs: 15 * 60 * 1000,
+	max: 3,
+});
 
 const { checkToken } = require("../auth/tokenValidation");
 const {
@@ -24,6 +30,7 @@ router.post(
 
 router.post(
 	"/login",
+	loginLimiter,
 	[
 		body("email", "Please enter a valid email").isEmail().normalizeEmail(),
 		body("password", "Please enter a password!").notEmpty(),
